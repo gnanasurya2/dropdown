@@ -250,7 +250,7 @@ function SearchableDropdown<T>({
         )}
 
         {isLoading && <Loader size={20} data-testid="dropdown-loader" />}
-        <img src={downIcon} width={"20px"} />
+        <img src={downIcon} width={"20px"} alt="dropdown-arrow" />
       </DropdownInput>
       {isOpen && (
         <DropDownMenuWrapper>
@@ -258,6 +258,7 @@ function SearchableDropdown<T>({
             ref={searchInputRef}
             type="text"
             placeholder={inputPlaceholder}
+            aria-label={inputPlaceholder}
             value={searchTerm}
             onChange={handleSearch}
             onKeyDown={handleKeyPress}
@@ -265,6 +266,7 @@ function SearchableDropdown<T>({
           {isError && <p>{errorText}</p>}
           <DropdownMenu
             role="listbox"
+            aria-label="dropdown options"
             ref={listItemRef}
             onKeyDown={handleKeyPress}
           >

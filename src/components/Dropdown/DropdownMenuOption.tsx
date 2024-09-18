@@ -48,7 +48,7 @@ const DropdownMenuOption = ({
       selected={isSelected}
     >
       {children}
-      {isSelected && <img src={CheckUrl} />}
+      {isSelected && <img src={CheckUrl} alt="selected image" />}
     </Option>
   );
 };

@@ -38,7 +38,7 @@ const MultiSelectChips = ({
             onClick(index);
           }}
         >
-          {ele.label} <img src={crossUrl} width="20px" />
+          {ele.label} <img src={crossUrl} width="20px" alt="cross" />
         </Chip>
       ))}
     </div>
