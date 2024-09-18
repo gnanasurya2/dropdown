@@ -28,7 +28,7 @@ const MultiSelectChips = ({
     return <p>{placeholder}</p>;
   }
   return (
-    <div>
+    <div data-testId="dropdown-multiselect-wrapper">
       {options.map((ele, index) => (
         <Chip
           key={ele.value}

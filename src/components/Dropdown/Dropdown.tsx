@@ -249,7 +249,7 @@ function SearchableDropdown<T>({
           </p>
         )}
 
-        {isLoading && <Loader size={20} />}
+        {isLoading && <Loader size={20} data-testid="dropdown-loader" />}
         <img src={downIcon} width={"20px"} />
       </DropdownInput>
       {isOpen && (

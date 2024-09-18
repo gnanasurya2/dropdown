@@ -1,5 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
+import {
+  expect,
+  fn,
+  userEvent,
+  waitFor,
+  waitForElementToBeRemoved,
+  within,
+} from "@storybook/test";
 
 import Dropdown, { DropdownOption } from "./Dropdown";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -48,6 +55,47 @@ type Story = StoryObj<typeof meta>;
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Primary: Story = {
+  play: async ({ canvasElement }) => {
+    queryClient.clear();
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByText("Select company name"));
+
+    await expect(
+      canvas.getByPlaceholderText("search products"),
+    ).toBeInTheDocument();
+    await expect(canvas.getByPlaceholderText("search products")).toHaveFocus();
+
+    await expect(canvas.getByTestId("dropdown-loader")).toBeVisible();
+
+    await waitForElementToBeRemoved(canvas.getByTestId("dropdown-loader"));
+
+    const element = canvas.getByRole("listbox");
+
+    await expect(element.children.length).toEqual(30);
+
+    await userEvent.type(
+      canvas.getByPlaceholderText("search products"),
+      "Powder",
+    );
+
+    await waitFor(async () => {
+      await expect(element.children.length).toEqual(1);
+    });
+
+    await userEvent.clear(canvas.getByPlaceholderText("search products"));
+
+    await waitFor(
+      async () => {
+        await expect(element.children.length).toEqual(30);
+      },
+      { interval: 200, timeout: 1200 },
+    );
+
+    await userEvent.click(canvas.getByText("Red Lipstick"));
+
+    await expect(canvas.getByText("Red Lipstick")).toBeVisible();
+  },
   args: {
     url: "https://dummyjson.com/products",
     placeholder: "Select company name",
@@ -62,12 +110,49 @@ export const Primary: Story = {
 };
 
 export const localOnlySearch: Story = {
+  play: async ({ canvasElement }) => {
+    queryClient.clear();
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByText("Select company name"));
+
+    await expect(
+      canvas.getByPlaceholderText("search company"),
+    ).toBeInTheDocument();
+    await expect(canvas.getByPlaceholderText("search company")).toHaveFocus();
+
+    const element = canvas.getByRole("listbox");
+
+    await expect(element.children.length).toEqual(3);
+
+    await userEvent.type(
+      canvas.getByPlaceholderText("search company"),
+      "Tesla",
+    );
+
+    await waitFor(async () => {
+      await expect(element.children.length).toEqual(1);
+    });
+
+    await userEvent.clear(canvas.getByPlaceholderText("search company"));
+
+    await waitFor(
+      async () => {
+        await expect(element.children.length).toEqual(3);
+      },
+      { interval: 200, timeout: 1200 },
+    );
+
+    await userEvent.click(canvas.getByText("Tesla"));
+
+    await expect(canvas.getByText("Tesla")).toBeVisible();
+  },
   args: {
     url: "",
     placeholder: "Select company name",
     onSelect: (data) => console.log("data", data),
     transformData: (data) => data,
-    inputPlaceholder: "search products",
+    inputPlaceholder: "search company",
     defaultOptions: [
       {
         label: "Tesla",
@@ -86,6 +171,48 @@ export const localOnlySearch: Story = {
 };
 
 export const SearchReciepes: Story = {
+  play: async ({ canvasElement }) => {
+    queryClient.clear();
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByText("Select receipe name"));
+
+    await expect(
+      canvas.getByPlaceholderText("search receipes"),
+    ).toBeInTheDocument();
+
+    await expect(canvas.getByPlaceholderText("search receipes")).toHaveFocus();
+
+    await expect(canvas.getByTestId("dropdown-loader")).toBeVisible();
+
+    await waitForElementToBeRemoved(canvas.getByTestId("dropdown-loader"));
+
+    const element = canvas.getByRole("listbox");
+
+    await expect(element.children.length).toEqual(30);
+
+    await userEvent.type(
+      canvas.getByPlaceholderText("search receipes"),
+      "chicken biryani",
+    );
+
+    await waitFor(async () => {
+      await expect(element.children.length).toEqual(1);
+    });
+
+    await userEvent.clear(canvas.getByPlaceholderText("search receipes"));
+
+    await waitFor(
+      async () => {
+        await expect(element.children.length).toEqual(30);
+      },
+      { interval: 200, timeout: 1200 },
+    );
+
+    await userEvent.click(canvas.getByText("Classic Margherita Pizza"));
+
+    await expect(canvas.getByText("Classic Margherita Pizza")).toBeVisible();
+  },
   args: {
     url: "https://dummyjson.com/recipes",
     placeholder: "Select receipe name",
@@ -100,6 +227,60 @@ export const SearchReciepes: Story = {
 };
 
 export const MultiSelect: Story = {
+  play: async ({ canvasElement }) => {
+    queryClient.clear();
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByText("Select receipe name"));
+
+    await expect(
+      canvas.getByPlaceholderText("search receipes"),
+    ).toBeInTheDocument();
+
+    await expect(canvas.getByPlaceholderText("search receipes")).toHaveFocus();
+
+    await expect(canvas.getByTestId("dropdown-loader")).toBeVisible();
+
+    await waitForElementToBeRemoved(canvas.getByTestId("dropdown-loader"), {
+      timeout: 4000,
+      interval: 400,
+    });
+
+    const element = canvas.getByRole("listbox");
+
+    await expect(element.children.length).toEqual(30);
+
+    await userEvent.type(
+      canvas.getByPlaceholderText("search receipes"),
+      "chicken",
+    );
+
+    await waitFor(
+      async () => {
+        await expect(element.children.length).toEqual(5);
+      },
+      { interval: 200, timeout: 1200 },
+    );
+    const listNode = canvas.getByText("Mango Salsa Chicken");
+    await expect(listNode.children.length).toBe(0);
+    await userEvent.click(canvas.getByText("Mango Salsa Chicken"));
+    await expect(listNode.children.length).toBe(1);
+
+    const listNode2 = canvas.getByText("Chicken Biryani");
+    await expect(listNode2.children.length).toBe(0);
+    await userEvent.click(canvas.getByText("Chicken Biryani"));
+    await expect(listNode2.children.length).toBe(1);
+
+    const chipWrapper = canvas.getByTestId("dropdown-multiselect-wrapper");
+
+    await expect(chipWrapper.children.length).toEqual(2);
+
+    await userEvent.click(
+      canvas.getByRole("button", { name: /Mango Salsa Chicken/i }),
+    );
+
+    await expect(chipWrapper.children.length).toEqual(1);
+  },
   args: {
     url: "https://dummyjson.com/recipes",
     placeholder: "Select receipe name",
@@ -116,6 +297,52 @@ export const MultiSelect: Story = {
 };
 
 export const ApiForSearch: Story = {
+  play: async ({ canvasElement }) => {
+    queryClient.clear();
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByText("Select receipe name"));
+
+    await expect(
+      canvas.getByPlaceholderText("search receipes"),
+    ).toBeInTheDocument();
+
+    await expect(canvas.getByPlaceholderText("search receipes")).toHaveFocus();
+
+    await expect(canvas.getByTestId("dropdown-loader")).toBeVisible();
+
+    await waitForElementToBeRemoved(canvas.getByTestId("dropdown-loader"));
+
+    const element = canvas.getByRole("listbox");
+
+    await expect(element.children.length).toEqual(30);
+
+    await userEvent.type(
+      canvas.getByPlaceholderText("search receipes"),
+      "chicken biryani",
+    );
+
+    await waitFor(async () => {
+      await expect(element.children.length).toEqual(1);
+    });
+
+    await userEvent.clear(canvas.getByPlaceholderText("search receipes"));
+
+    await waitFor(
+      async () => {
+        await expect(element.children.length).toEqual(30);
+      },
+      { interval: 200, timeout: 1200 },
+    );
+
+    await userEvent.click(canvas.getByText("Classic Margherita Pizza"));
+
+    await expect(
+      canvas.getByRole("button", {
+        name: /Classic Margherita Pizza/i,
+      }),
+    ).toBeVisible();
+  },
   args: {
     url: "https://dummyjson.com/recipes",
     placeholder: "Select receipe name",
