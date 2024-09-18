@@ -1,4 +1,4 @@
-import{g as T}from"./_commonjsHelpers-Cpj98o6Y.js";var C={exports:{}},r={};/**
+import{g as T}from"./commonjsHelpers-Cpj98o6Y.js";var C={exports:{}},r={};/**
  * @license React
  * react.production.min.js
  *
