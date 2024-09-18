@@ -227,6 +227,11 @@ function SearchableDropdown<T>({
     <DropdownContainer ref={dropdownRef}>
       <DropdownInput
         tabIndex={0}
+        onKeyDown={(event) => {
+          if (event.target === event.currentTarget && event.key === "Enter") {
+            setIsOpen((prev) => !prev);
+          }
+        }}
         onClick={() => {
           setIsOpen((prev) => !prev);
         }}
